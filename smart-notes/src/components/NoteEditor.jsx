@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNotes } from "../context/NotesContext";
 import { Toaster, toaster } from "./ui/toaster"
+import Highlight from "@tiptap/extension-highlight"
 
 
 import {
@@ -70,6 +71,9 @@ const { selectedNote, addNote, updateNote, clearSelectedNote } = useNotes();
     Placeholder.configure({
       placeholder: "Start typing your content here...",
     }),
+     Highlight.configure({
+        multicolor: true,
+      }),
   ],
   content: "",
   editable,
@@ -327,6 +331,23 @@ const handleModeChange = (mode) => {
     flex="1"
     display="flex"
     flexDirection="column"
+    maxH="calc(100vh - 120px)"
+  overflowY="auto"
+  css={{
+    "&::-webkit-scrollbar": {
+      width: "6px",
+    },
+    "&::-webkit-scrollbar-track": {
+      background: "transparent",
+    },
+    "&::-webkit-scrollbar-thumb": {
+      background: "#CBD5E0",
+      borderRadius: "20px",
+    },
+    "&::-webkit-scrollbar-thumb:hover": {
+      background: "#A0AEC0",
+    },
+  }} 
   >
     {/* toolbar */}
     <HStack p="2" borderBottomWidth="1px" justify="space-between">
@@ -339,7 +360,24 @@ const handleModeChange = (mode) => {
     <Control.Italic />
     <Control.Underline />
     <Control.Strikethrough />
+     <RichTextEditor.ControlGroup>
+              <Control.H1 />
+              <Control.H2 />
+              <Control.H3 />
+              <Control.H4 />
+      </RichTextEditor.ControlGroup>
   </RichTextEditor.ControlGroup>
+  <RichTextEditor.ControlGroup>
+          <Control.BulletList />
+          <Control.OrderedList />
+        </RichTextEditor.ControlGroup>
+         <RichTextEditor.ControlGroup>
+          <Control.Highlight />
+        </RichTextEditor.ControlGroup>
+  <RichTextEditor.ControlGroup>
+              <Control.Undo />
+            </RichTextEditor.ControlGroup>
+
 
  <input
   type="file"
@@ -371,21 +409,32 @@ const handleModeChange = (mode) => {
     </HStack>
 
     <RichTextEditor.Content
-  minH="350px"
-  flex="1"
-  px={4}
-  py={3}
-  fontSize="md"
+  
   sx={{
+    minH:"350px",
+  flex:"1",
+  px:"4",
+  py:"3",
+  fontSize:"md",
     overflowY: "auto",
     textAlign: "left",
+    maxWidth: "100%",
+
+    "& .ProseMirror": {
+      maxWidth: "100%",
+      whiteSpace: "pre-wrap",
+      wordBreak: "break-word",
+      overflowWrap: "break-word",
+    },
+
     "& img": {
-  maxWidth: "250px",
-  display: "block",
-  margin: "12px auto",
-},
+      maxWidth: "250px",
+      display: "block",
+      margin: "12px auto",
+    },
   }}
 />
+
 
   </RichTextEditor.Root>
 )}

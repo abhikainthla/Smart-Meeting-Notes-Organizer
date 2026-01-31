@@ -6,6 +6,7 @@ export const NotesProvider = ({ children }) => {
   const [notes, setNotes] = useState([]);
   const [selectedNote, setSelectedNote] = useState(null);
   const [activeCategory, setActiveCategory] = useState("all-notes");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const addNote = (note) => {
     setNotes((prev) => [note, ...prev]);
@@ -17,6 +18,11 @@ export const NotesProvider = ({ children }) => {
     );
   };
 
+  const deleteNote = (id) => {
+    setNotes((prev) => prev.filter((note) => note.id !== id));
+    setSelectedNote(null);
+  };
+
   const selectNote = (note) => setSelectedNote(note);
   const clearSelectedNote = () => setSelectedNote(null);
 
@@ -26,9 +32,12 @@ export const NotesProvider = ({ children }) => {
         notes,
         selectedNote,
         activeCategory,
+        searchQuery,
+        setSearchQuery,
         setActiveCategory,
         addNote,
         updateNote,
+        deleteNote,
         selectNote,
         clearSelectedNote,
       }}

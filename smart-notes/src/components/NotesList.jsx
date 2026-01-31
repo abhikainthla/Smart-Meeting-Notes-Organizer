@@ -2,7 +2,19 @@ import { Badge, Box, Flex, Stack, Text } from "@chakra-ui/react";
 import { useNotes } from "../context/NotesContext";
 
 const NotesList = () => {
-  const { notes, selectNote, selectedNote, activeCategory } = useNotes();
+    const {
+    notes,
+    selectNote,
+    selectedNote,
+    activeCategory,
+    searchQuery,
+  } = useNotes();
+
+    const stripHtml = (html = "") => {
+    const div = document.createElement("div");
+    div.innerHTML = html;
+    return div.textContent || "";
+  };
 
   const getPreviewText = (html, wordLimit = 10) => {
     const tempDiv = document.createElement("div");
@@ -31,24 +43,41 @@ const NotesList = () => {
     return "Just now";
   };
 
+  
+
   if (!notes || notes.length === 0) {
     return <Text color="gray.500">No notes yet</Text>;
   }
 
-const filteredNotes = (() => {
-  if (activeCategory === "all-notes") return notes;
+const filteredNotes = notes.filter((note) => {
+    // CATEGORY FILTER
+    if (activeCategory !== "all-notes") {
+      const normalizedCategory = note.category
+        ?.toLowerCase()
+        .replace(/\s+/g, "-");
 
-  return notes.filter((note) => {
-    if (!note.category) return false;
+      if (normalizedCategory !== activeCategory) return false;
+    }
 
-    const normalizedCategory = note.category
-      .toLowerCase()
-      .trim()
-      .replace(/\s+/g, "-");
+    // SEARCH FILTER
+    if (!searchQuery.trim()) return true;
 
-    return normalizedCategory === activeCategory;
+    const query = searchQuery.toLowerCase();
+
+    const contentText = stripHtml(note.content).toLowerCase();
+
+    return (
+      note.title?.toLowerCase().includes(query) ||
+      note.category?.toLowerCase().includes(query) ||
+      note.tags?.some((tag) => tag.toLowerCase().includes(query)) ||
+      contentText.includes(query)
+    );
   });
-})();
+
+  if (filteredNotes.length === 0) {
+    return <Text color="gray.500">No matching notes</Text>;
+  }
+
 
 
   return (
@@ -70,7 +99,7 @@ const filteredNotes = (() => {
             onClick={() => selectNote(note)}
           >
             <Flex justifyContent="space-between">
-              <Text fontWeight="bold" fontSize="lg">
+              <Text fontWeight="semibold" fontSize="lg">
                 {note.title}
               </Text>
               <Text fontSize="xs" color="gray.400">
